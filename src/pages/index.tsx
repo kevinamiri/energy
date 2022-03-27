@@ -5,24 +5,7 @@ import { useTheme } from "@mui/material/styles";
 import { graphql } from "gatsby";
 import type { ApexOptions } from "apexcharts";
 import Chart from "react-apexcharts";
-import { alpha } from "@mui/material/styles";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TablePagination from "@mui/material/TablePagination";
-import TableRow from "@mui/material/TableRow";
-import TableSortLabel from "@mui/material/TableSortLabel";
-import Toolbar from "@mui/material/Toolbar";
-import Typography from "@mui/material/Typography";
-import Paper from "@mui/material/Paper";
-import Checkbox from "@mui/material/Checkbox";
-import IconButton from "@mui/material/IconButton";
-import Tooltip from "@mui/material/Tooltip";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Switch from "@mui/material/Switch";
-import { visuallyHidden } from "@mui/utils";
+import { DataGrid, GridColDef } from "@mui/x-data-grid";
 
 interface nodeShape {
   node: {
@@ -38,54 +21,18 @@ interface nodeShape {
     EnergyperArea2019: string;
     Heating2019: string;
     Heating2020: string;
-    field1: string;
+    ID: string;
   };
 }
 
-interface Data {
-  Area: string;
-  Building: string;
-  BuildingType: string;
-  BuildingYear: string;
-  Customer: string;
-  Electricity2019: string;
-  Electricity2020: string;
-  Energy2019: string;
-  Energy2020: string;
-  EnergyperArea2019: string;
-  Heating2019: string;
-  Heating2020: string;
-  field1: string;
-}
-
-// function that takes an array of numbers and returns the sum of the numbers
-function sum(arr: number[]): number {
-  return arr.reduce((a, b) => a + b);
-}
-// function that takes an array of numbers and returns the average of the numbers
-const average = (array: number[]): number => {
-  return sum(array) / array.length;
-};
-
-// function that takes an array of numbers and returns the median of the numbers
-const median = (array: number[]): number => {
-  const sortedArray = array.sort((a, b) => a - b);
-  const middleIndex = Math.floor(sortedArray.length / 2);
-  if (sortedArray.length % 2 === 0) {
-    return average([sortedArray[middleIndex - 1], sortedArray[middleIndex]]);
-  } else {
-    return sortedArray[middleIndex];
-  }
-};
-
 export default function Index(props) {
-  const CustomerName = props.data.allTestData1Csv.edges.map(
+  const CustomerName = props.data.allTestDataCsv.edges.map(
     (edge: nodeShape) => edge.node.Customer
   );
-  const Heating2019 = props.data.allTestData1Csv.edges.map((edge: nodeShape) =>
+  const Heating2019 = props.data.allTestDataCsv.edges.map((edge: nodeShape) =>
     parseFloat(edge.node.Heating2019)
   );
-  const Heating2020 = props.data.allTestData1Csv.edges.map((edge: nodeShape) =>
+  const Heating2020 = props.data.allTestDataCsv.edges.map((edge: nodeShape) =>
     parseFloat(edge.node.Heating2020)
   );
 
@@ -176,13 +123,6 @@ export default function Index(props) {
     },
   ];
 
-  const colors = [];
-
-  for (let i = 0; i < 470; i++) {
-    colors.push(`#${Math.floor(Math.random() * 16777215).toString(16)}`);
-  }
-
-  // const chartContenet = (CustomerName, ) =>{
   const chartOptions2: ApexOptions = {
     chart: {
       background: "transparent",
@@ -217,132 +157,39 @@ export default function Index(props) {
     },
   };
 
-  function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
-    if (b[orderBy] < a[orderBy]) {
-      return -1;
-    }
-    if (b[orderBy] > a[orderBy]) {
-      return 1;
-    }
-    return 0;
-  }
+  const columns: GridColDef[] = [
+    { field: "ID", headerName: "ID", width: 70 },
+    { field: "Heating2020", headerName: "Heating 2020", width: 150 },
+    { field: "Heating2019", headerName: "Heating 2019", width: 150 },
+    { field: "Energy2020", headerName: "Energy 2020", width: 150 },
+    { field: "Energy2019", headerName: "Energy 2019", width: 150 },
+    { field: "Electricity2020", headerName: "Electricity 2020", width: 150 },
+    { field: "Electricity2019", headerName: "Electricity 2019", width: 150 },
+    { field: "Area", headerName: "Area", width: 150 },
+    { field: "Building", headerName: "Building", width: 150 },
+    { field: "BuildingType", headerName: "BuildingType", width: 150 },
+    { field: "BuildingYear", headerName: "BuildingYear", width: 150 },
+    { field: "Customer", headerName: "Customer", width: 150 },
+  ];
 
-  type Order = "asc" | "desc";
-
-  function getComparator<Key extends keyof any>(
-    order: Order,
-    orderBy: Key
-  ): (
-    a: { [key in Key]: number | string },
-    b: { [key in Key]: number | string }
-  ) => number {
-    return order === "desc"
-      ? (a, b) => descendingComparator(a, b, orderBy)
-      : (a, b) => -descendingComparator(a, b, orderBy);
-  }
-
-  // This method is created for cross-browser compatibility, if you don't
-  // need to support IE11, you can use Array.prototype.sort() directly
-  function stableSort<T>(
-    array: readonly T[],
-    comparator: (a: T, b: T) => number
-  ) {
-    const stabilizedThis = array.map((el, index) => [el, index] as [T, number]);
-    stabilizedThis.sort((a, b) => {
-      const order = comparator(a[0], b[0]);
-      if (order !== 0) {
-        return order;
-      }
-      return a[1] - b[1];
-    });
-    return stabilizedThis.map((el) => el[0]);
-  }
-
-  interface HeadCell {
-    disablePadding: boolean;
-    field1: keyof Data;
-    Customer: string;
-    Heating2019: string;
-  }
-
-  interface EnhancedTableProps {
-    numSelected: number;
-    onRequestSort: (
-      event: React.MouseEvent<unknown>,
-      property: keyof Data
-    ) => void;
-    onSelectAllClick: (event: React.ChangeEvent<HTMLInputElement>) => void;
-    order: Order;
-    orderBy: string;
-    rowCount: number;
-  }
-
-  function EnhancedTableHead(props: EnhancedTableProps) {
-    const {
-      onSelectAllClick,
-      order,
-      orderBy,
-      numSelected,
-      rowCount,
-      onRequestSort,
-    } = props;
-    const createSortHandler =
-      (property: keyof Data) => (event: React.MouseEvent<unknown>) => {
-        onRequestSort(event, property);
-      };
-  }
+  const rows = props.data.allTestDataCsv.edges.map(
+    (edge: nodeShape) => edge.node
+  );
 
   return (
     <>
       <Container>
-        <Box mb={2}>
-          <Card>
-            <CardHeader title='Heating 2019 vs 2020' />
-            <CardContent>
-              <Box
-                sx={{
-                  display: "flex",
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                }}
-              >
-                <Box>
-                  <Typography variant='body1'>
-                    Heating 2019: {sum(Heating2019)} kWh
-                  </Typography>
-                  <Typography variant='body1'>
-                    Heating 2020: {sum(Heating2020)} kWh
-                  </Typography>
-                  <Typography variant='body1'>
-                    Difference: {sum(Heating2019) - sum(Heating2020)} kWh
-                  </Typography>
-                </Box>
-                <Box>
-                  <Typography variant='body1'>
-                    Average Heating 2019: {average(Heating2019)} kWh
-                  </Typography>
-                  <Typography variant='body1'>
-                    Average Heating 2020: {average(Heating2020)} kWh
-                  </Typography>
-                  <Typography variant='body1'>
-                    Difference: {average(Heating2019) - average(Heating2020)}{" "}
-                    kWh
-                  </Typography>
-                </Box>
-                <Box>
-                  <Typography variant='body1'>
-                    Median Heating 2019: {median(Heating2019)} kWh
-                  </Typography>
-                  <Typography variant='body1'>
-                    Median Heating 2020: {median(Heating2020)} kWh
-                  </Typography>
-                  <Typography variant='body1'>
-                    Difference: {median(Heating2019) - median(Heating2020)} kWh
-                  </Typography>
-                </Box>
-              </Box>
-            </CardContent>
-          </Card>
+        <Box my={4}>
+          <div style={{ height: 400, width: "100%" }}>
+            <DataGrid
+              rows={rows}
+              getRowId={(row) => row.ID}
+              columns={columns}
+              pageSize={5}
+              rowsPerPageOptions={[5]}
+              checkboxSelection
+            />
+          </div>
         </Box>
         <Box mb={2}>
           <Card
@@ -365,11 +212,20 @@ export default function Index(props) {
           </Card>
         </Box>
 
-        <Box mb={2} sx={{ display: "flex", flexDirection: "row" }}>
+        <Box
+          mb={2}
+          sx={{
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "center",
+            flexWrap: "wrap",
+          }}
+        >
           <Box
             mb={2}
             sx={{
               width: "50%",
+              minWidth: "380px",
             }}
           >
             <Card>
@@ -388,6 +244,7 @@ export default function Index(props) {
             mb={2}
             sx={{
               width: "50%",
+              minWidth: "380px",
             }}
           >
             <Card>
@@ -410,7 +267,7 @@ export default function Index(props) {
 
 export const pageQuery = graphql`
   query MyQuery {
-    allTestData1Csv {
+    allTestDataCsv {
       sum(field: Electricity2019)
       edges {
         node {
@@ -426,7 +283,7 @@ export const pageQuery = graphql`
           EnergyperArea2019
           Heating2019
           Heating2020
-          field1
+          ID
         }
       }
       max(field: Electricity2019)

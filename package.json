@@ -2,15 +2,12 @@
   "name": "gatsby",
   "version": "5.0.0",
   "private": true,
-  "browserslist": [
-    ">0.25%",
-    "not dead"
-  ],
   "dependencies": {
     "@emotion/react": "^11.8.2",
     "@emotion/server": "latest",
     "@emotion/styled": "^11.8.1",
     "@mui/material": "latest",
+    "@mui/x-data-grid": "^5.7.0",
     "apexcharts": "^3.33.2",
     "gatsby": "^4.10.1",
     "gatsby-plugin-emotion": "^7.10.0",
