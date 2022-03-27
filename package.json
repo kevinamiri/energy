@@ -1,0 +1,44 @@
+{
+  "name": "gatsby",
+  "version": "5.0.0",
+  "private": true,
+  "browserslist": [
+    ">0.25%",
+    "not dead"
+  ],
+  "dependencies": {
+    "@emotion/react": "^11.8.2",
+    "@emotion/server": "latest",
+    "@emotion/styled": "^11.8.1",
+    "@mui/material": "latest",
+    "apexcharts": "^3.33.2",
+    "gatsby": "^4.10.1",
+    "gatsby-plugin-emotion": "^7.10.0",
+    "gatsby-plugin-image": "^2.10.0",
+    "gatsby-plugin-manifest": "^4.10.1",
+    "gatsby-plugin-react-helmet": "^5.10.0",
+    "gatsby-plugin-sharp": "^4.10.1",
+    "gatsby-plugin-sitemap": "^5.10.1",
+    "gatsby-source-filesystem": "^4.10.0",
+    "gatsby-transformer-csv": "^4.10.0",
+    "gatsby-transformer-remark": "^5.10.1",
+    "gatsby-transformer-sharp": "^4.10.0",
+    "react": "^17.0.1",
+    "react-apexcharts": "^1.4.0",
+    "react-dom": "^17.0.1",
+    "react-helmet": "^6.1.0",
+    "rumble-charts": "^4.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^17.0.1",
+    "@types/react": "^17.0.1",
+    "@types/react-dom": "^17.0.1",
+    "typescript": "^4.6.2"
+  },
+  "scripts": {
+    "develop": "gatsby develop",
+    "build": "gatsby build",
+    "serve": "gatsby serve",
+    "post-update": "echo \"codesandbox preview only, need an update\" && yarn upgrade --latest"
+  }
+}
